@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بورصة اليمن | هوامير 100/1000</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --primary: #0046ad; --secondary: #f4f7fa; --text: #333; --accent: #2ecc71; }
+        body { background-color: var(--secondary); font-family: 'Cairo', sans-serif; margin: 0; padding: 20px; color: var(--text); }
+        
+        /* تصميم كرت المحفظة البنكي */
+        .bank-card { background: linear-gradient(135deg, var(--primary), #002a66); color: white; border-radius: 20px; padding: 25px; box-shadow: 0 10px 20px rgba(0,0,0,0.15); margin-bottom: 25px; }
+        .bank-card h2 { margin: 0; font-size: 1.2rem; opacity: 0.9; }
+        .balance-box { display: flex; justify-content: space-between; margin-top: 20px; }
+        .balance-item { text-align: center; }
+        .balance-item span { display: block; font-size: 0.8rem; opacity: 0.8; }
+        .balance-item strong { font-size: 1.4rem; }
+
+        /* نظام التنبيهات اللحظي (Edge Ready) */
+        .live-market { background: white; border-radius: 15px; padding: 15px; border-left: 5px solid var(--primary); margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .rate-badge { background: #eef2f7; padding: 5px 10px; border-radius: 50px; color: var(--primary); font-weight: bold; }
+
+        /* أزرار العمليات */
+        .btn-action { width: 100%; padding: 15px; border: none; border-radius: 12px; font-weight: bold; font-size: 1.1rem; cursor: pointer; transition: 0.3s; margin-bottom: 10px; }
+        .btn-trade { background-color: var(--accent); color: white; box-shadow: 0 5px 15px rgba(46, 204, 113, 0.3); }
+        .btn-trade:active { transform: scale(0.98); }
+
+        /* شاشة الـ OTP (مخفية للبداية) */
+        #otp-screen { display: none; text-align: center; }
+        input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 10px; border: 1px solid #ddd; text-align: center; font-size: 1.2rem; }
+    </style>
+</head>
+<body>
+
+    <div id="game-screen">
+        <div class="bank-card">
+            <h2>🏦 المحفظة الإلكترونية</h2>
+            <div class="balance-box">
+                <div class="balance-item">
+                    <span>القديم (YR)</span>
+                    <strong id="oldBal">1,000</strong>
+                </div>
+                <div class="balance-item">
+                    <span>الجديد (N-YR)</span>
+                    <strong id="newBal">10,000</strong>
+                </div>
+            </div>
+        </div>
+
+        <div class="live-market">
+            <p>📈 سعر الصرف اللحظي: <span class="rate-badge" id="rateText">100 : 1000</span></p>
+            <small style="color: #666;">آخر تحديث: منذ ثوانٍ (Edge Runtime)</small>
+        </div>
+
+        <button class="btn-action btn-trade" onclick="handleTrade()">تنفيذ صفقة سريعة ⚡</button>
+        <p style="text-align: center; font-size: 0.8rem; color: #888;">سيتم طلب كود الواتساب عند سحب الجوائز 🔐</p>
+    </div>
+
+    <script>
+        // منطق اللعبة (Serverless Logic Simulation)
+        let oldCurrency = 1000;
+        let newCurrency = 10000;
+        let baseRate = 10; // 100 مقابل 1000
+
+        function handleTrade() {
+            // محاكاة Edge Function لحساب الربح
+            let profitChance = Math.random() > 0.5; // فرصة ربح أو خسارة عشوائية للتحفيز
+            if (profitChance) {
+                let gain = Math.floor(Math.random() * 50);
+                oldCurrency += gain;
+                alert(`🔥 مبروك! حققت ربح ${gain} ريال قديم من فارق السعر`);
+            } else {
+                alert("📉 السعر حالياً غير مناسب، انتظر القفزة القادمة!");
+            }
+            updateUI();
+        }
+
+        function updateUI() {
+            document.getElementById('oldBal').innerText = oldCurrency.toLocaleString();
+            document.getElementById('newBal').innerText = (oldCurrency * 10).toLocaleString();
+        }
+
+        // تحديث السعر تلقائياً (Simulating Live API)
+        setInterval(() => {
+            let drift = (Math.random() * 0.4) - 0.2;
+            let currentRate = (100 + drift).toFixed(2);
+            document.getElementById('rateText').innerText = `${currentRate} : 1000`;
+        }, 3000);
+    </script>
+</body>
+</html>
+
