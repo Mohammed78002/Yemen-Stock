@@ -1,148 +1,34 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>الهاشمي تداول | Al-Hashemi Trading</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --primary: #003366;
-            --accent: #28a745;
-            --glass-bg: rgba(255, 255, 255, 0.95);
+<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+
+<script>
+    // إعدادات المؤسسة (يتم الحصول عليها من وحدة تحكم Firebase)
+    const firebaseConfig = {
+        apiKey: "YOUR_API_KEY",
+        authDomain: "yemen-stock.firebaseapp.com",
+        projectId: "yemen-stock",
+        storageBucket: "yemen-stock.appspot.com",
+        messagingSenderId: "YOUR_ID",
+        appId: "YOUR_APP_ID"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    // دالة تسجيل "هامور" جديد في قاعدة البيانات الحقيقية
+    async function registerUser(name, phone) {
+        try {
+            await db.collection("users").doc(phone).set({
+                fullName: name,
+                phone: phone,
+                oldBalance: 1500, // رصيد البداية
+                newBalance: 15000,
+                rank: "صراف ناشئ",
+                createdAt: new Date()
+            });
+            console.log("تم تسجيل الهامور بنجاح في السحابة ✅");
+        } catch (error) {
+            console.error("خطأ في الاتصال بالسحابة: ", error);
         }
-
-        body, html {
-            margin: 0; padding: 0; font-family: 'Cairo', sans-serif; height: 100%; overflow: hidden;
-            background: #001a33; /* لون خلفية عميق */
-        }
-
-        /* 🌌 خلفية هندسية متحركة بالكامل */
-        .animated-bg {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: -1; background: linear-gradient(45deg, #001a33, #003366);
-            overflow: hidden;
-        }
-
-        .cube {
-            position: absolute; width: 80px; height: 80px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            animation: animate-cubes 15s linear infinite;
-            bottom: -150px;
-        }
-
-        @keyframes animate-cubes {
-            0% { transform: translateY(0) rotate(0deg); opacity: 1; border-radius: 0; }
-            100% { transform: translateY(-1000px) rotate(720deg); opacity: 0; border-radius: 50%; }
-        }
-
-        /* شاشة الدخول الاحترافية */
-        #loginOverlay {
-            position: fixed; inset: 0; z-index: 1000;
-            display: flex; align-items: center; justify-content: center;
-            background: rgba(0, 26, 51, 0.8); backdrop-filter: blur(15px);
-            transition: 0.8s ease-in-out;
-        }
-
-        .login-card {
-            background: var(--glass-bg); padding: 40px; border-radius: 30px;
-            width: 85%; max-width: 400px; text-align: center;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
-            border: 2px solid rgba(255,255,255,0.2);
-        }
-
-        .logo-area {
-            background: var(--primary); width: 70px; height: 70px;
-            border-radius: 20px; margin: 0 auto 20px;
-            display: flex; align-items: center; justify-content: center;
-            color: white; font-size: 2rem; box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-        }
-
-        h2 { color: var(--primary); font-weight: 900; font-size: 1.8rem; margin: 10px 0; }
-        
-        input {
-            width: 100%; padding: 15px; margin: 10px 0;
-            border-radius: 15px; border: 2px solid #eee;
-            font-family: 'Cairo'; font-size: 1rem; text-align: center;
-            box-sizing: border-box; transition: 0.3s;
-        }
-
-        input:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 15px rgba(40, 167, 69, 0.2); }
-
-        .btn-hashemi {
-            background: linear-gradient(to right, var(--accent), #218838);
-            color: white; border: none; width: 100%; padding: 16px;
-            border-radius: 15px; font-weight: 700; font-size: 1.1rem;
-            cursor: pointer; margin-top: 15px; transition: 0.3s;
-        }
-
-        /* واجهة التطبيق الرئيسية */
-        #mainContent { display: none; padding: 20px; opacity: 0; transition: 1s; }
-
-        .bank-card {
-            background: linear-gradient(135deg, var(--primary), #004d99);
-            border-radius: 25px; padding: 30px; color: white;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-            margin: auto; max-width: 500px;
-        }
-    </style>
-</head>
-<body>
-
-    <div class="animated-bg" id="bg">
-        </div>
-
-    <div id="loginOverlay">
-        <div class="login-card">
-            <div class="logo-area">💎</div>
-            <h2>الهاشمي تداول</h2>
-            <p style="color: #666; font-size: 0.9rem;">نظام إدارة الأصول اللحظي</p>
-            
-            <input type="text" id="userName" placeholder="الاسم الكامل">
-            <input type="tel" id="userPhone" placeholder="رقم الموبايل">
-            
-            <button class="btn-hashemi" onclick="unlockApp()">تسجيل الدخول الآمن 🔒</button>
-        </div>
-    </div>
-
-    <div id="mainContent">
-        <div class="bank-card">
-            <div style="font-size: 0.8rem; background: rgba(255,255,255,0.2); display: inline-block; padding: 5px 15px; border-radius: 50px; margin-bottom: 10px;">👑 رتبة: هامور</div>
-            <h3 id="welcomeMsg" style="margin:0;">أهلاً بك في الهاشمي تداول</h3>
-            <div style="display: flex; justify-content: space-between; margin-top: 30px; text-align: center;">
-                <div><strong style="font-size: 1.8rem;">1,500</strong><br><span style="opacity: 0.7;">الريال القديم</span></div>
-                <div><strong style="font-size: 1.8rem;">15,000</strong><br><span style="opacity: 0.7;">الريال الجديد</span></div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        // توليد مربعات متحركة هندسياً
-        const bg = document.getElementById('bg');
-        for (let i = 0; i < 15; i++) {
-            const cube = document.createElement('div');
-            cube.className = 'cube';
-            cube.style.left = Math.random() * 100 + '%';
-            cube.style.width = cube.style.height = Math.random() * 50 + 20 + 'px';
-            cube.style.animationDelay = Math.random() * 10 + 's';
-            cube.style.animationDuration = Math.random() * 10 + 10 + 's';
-            bg.appendChild(cube);
-        }
-
-        function unlockApp() {
-            const name = document.getElementById('userName').value;
-            if(!name) return alert("ادخل اسمك يا هامور!");
-
-            document.getElementById('loginOverlay').style.opacity = '0';
-            setTimeout(() => {
-                document.getElementById('loginOverlay').style.display = 'none';
-                const main = document.getElementById('mainContent');
-                main.style.display = 'block';
-                setTimeout(() => main.style.opacity = '1', 50);
-                document.getElementById('welcomeMsg').innerText = `أهلاً بك يا ${name}`;
-            }, 800);
-        }
-    </script>
-</body>
-</html>
+    }
+</script>
