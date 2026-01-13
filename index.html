@@ -3,235 +3,146 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>بورصة اليمن | Al-Kuraimi Style</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap" rel="stylesheet">
+    <title>الهاشمي تداول | Al-Hashemi Trading</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --kuraimi-blue: #004a99;
-            --kuraimi-green: #28a745;
-            --glass: rgba(255, 255, 255, 0.9);
-            --bg: #f0f2f5;
+            --primary: #003366;
+            --accent: #28a745;
+            --glass-bg: rgba(255, 255, 255, 0.95);
         }
 
-        body {
-            background-color: var(--bg);
-            font-family: 'Cairo', sans-serif;
-            margin: 0;
-            overflow-x: hidden;
-            background: linear-gradient(135deg, #e9f1f9 0%, #ffffff 100%);
+        body, html {
+            margin: 0; padding: 0; font-family: 'Cairo', sans-serif; height: 100%; overflow: hidden;
+            background: #001a33; /* لون خلفية عميق */
         }
 
-        /* حركات هندسية في الخلفية */
-        .bg-shape {
-            position: fixed;
-            z-index: -1;
-            filter: blur(80px);
-            opacity: 0.4;
-            animation: move 10s infinite alternate;
+        /* 🌌 خلفية هندسية متحركة بالكامل */
+        .animated-bg {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1; background: linear-gradient(45deg, #001a33, #003366);
+            overflow: hidden;
         }
-        .shape1 { width: 300px; height: 300px; background: var(--kuraimi-blue); top: -100px; right: -100px; border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%; }
-        .shape2 { width: 250px; height: 250px; background: var(--kuraimi-green); bottom: -50px; left: -50px; border-radius: 50%; }
 
-        @keyframes move { from { transform: translate(0,0); } to { transform: translate(30px, 50px); } }
+        .cube {
+            position: absolute; width: 80px; height: 80px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            animation: animate-cubes 15s linear infinite;
+            bottom: -150px;
+        }
+
+        @keyframes animate-cubes {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; border-radius: 0; }
+            100% { transform: translateY(-1000px) rotate(720deg); opacity: 0; border-radius: 50%; }
+        }
 
         /* شاشة الدخول الاحترافية */
         #loginOverlay {
-            position: fixed;
-            inset: 0;
-            background: var(--kuraimi-blue);
-            z-index: 2000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            position: fixed; inset: 0; z-index: 1000;
+            display: flex; align-items: center; justify-content: center;
+            background: rgba(0, 26, 51, 0.8); backdrop-filter: blur(15px);
+            transition: 0.8s ease-in-out;
         }
 
-        .login-box {
-            background: var(--glass);
-            padding: 40px 30px;
-            border-radius: 24px;
-            width: 90%;
-            max-width: 400px;
-            text-align: center;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.3);
-            transform: translateY(0);
-            animation: fadeInUp 0.6s ease-out;
+        .login-card {
+            background: var(--glass-bg); padding: 40px; border-radius: 30px;
+            width: 85%; max-width: 400px; text-align: center;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+            border: 2px solid rgba(255,255,255,0.2);
         }
 
-        .login-box h2 { color: var(--kuraimi-blue); font-weight: 800; font-size: 1.8rem; margin-bottom: 5px; }
-        .login-box p { color: #666; margin-bottom: 30px; font-size: 0.9rem; }
-
-        .input-group { position: relative; margin-bottom: 20px; }
-        .input-group input {
-            width: 100%;
-            padding: 15px;
-            border-radius: 12px;
-            border: 2px solid #eee;
-            background: #fdfdfd;
-            font-family: 'Cairo';
-            font-size: 1rem;
-            transition: 0.3s;
-            box-sizing: border-box;
-            text-align: center;
-        }
-        .input-group input:focus { border-color: var(--kuraimi-blue); outline: none; background: #fff; box-shadow: 0 0 15px rgba(0,74,153,0.1); }
-
-        .btn-kuraimi {
-            background: linear-gradient(to left, var(--kuraimi-green), #218838);
-            color: white;
-            border: none;
-            width: 100%;
-            padding: 15px;
-            border-radius: 12px;
-            font-weight: 700;
-            font-size: 1.1rem;
-            cursor: pointer;
-            transition: 0.3s;
-            box-shadow: 0 10px 20px rgba(40, 167, 69, 0.3);
-        }
-        .btn-kuraimi:hover { transform: translateY(-3px); box-shadow: 0 15px 25px rgba(40, 167, 69, 0.4); }
-
-        /* الواجهة الرئيسية */
-        .app-container { opacity: 0; padding: 20px; max-width: 500px; margin: auto; transition: 1s; }
-
-        .header-card {
-            background: linear-gradient(135deg, var(--kuraimi-blue) 0%, #003366 100%);
-            border-radius: 24px;
-            padding: 30px;
-            color: white;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 15px 30px rgba(0,74,153,0.2);
-            margin-bottom: 25px;
+        .logo-area {
+            background: var(--primary); width: 70px; height: 70px;
+            border-radius: 20px; margin: 0 auto 20px;
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-size: 2rem; box-shadow: 0 10px 20px rgba(0,0,0,0.2);
         }
 
-        .header-card::before {
-            content: ''; position: absolute; top: -50%; right: -20%; width: 100%; height: 200%;
-            background: rgba(255,255,255,0.05); transform: rotate(45deg);
+        h2 { color: var(--primary); font-weight: 900; font-size: 1.8rem; margin: 10px 0; }
+        
+        input {
+            width: 100%; padding: 15px; margin: 10px 0;
+            border-radius: 15px; border: 2px solid #eee;
+            font-family: 'Cairo'; font-size: 1rem; text-align: center;
+            box-sizing: border-box; transition: 0.3s;
         }
 
-        .user-badge {
-            background: rgba(255,255,255,0.15);
-            padding: 6px 15px;
-            border-radius: 50px;
-            font-size: 0.8rem;
-            display: inline-block;
-            margin-bottom: 15px;
-            backdrop-filter: blur(5px);
+        input:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 15px rgba(40, 167, 69, 0.2); }
+
+        .btn-hashemi {
+            background: linear-gradient(to right, var(--accent), #218838);
+            color: white; border: none; width: 100%; padding: 16px;
+            border-radius: 15px; font-weight: 700; font-size: 1.1rem;
+            cursor: pointer; margin-top: 15px; transition: 0.3s;
         }
 
-        .balance-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; position: relative; z-index: 1; }
-        .bal-box { background: rgba(255,255,255,0.1); padding: 15px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.1); }
-        .bal-box span { font-size: 0.75rem; opacity: 0.8; display: block; margin-top: 5px; }
-        .bal-box strong { font-size: 1.5rem; display: block; }
+        /* واجهة التطبيق الرئيسية */
+        #mainContent { display: none; padding: 20px; opacity: 0; transition: 1s; }
 
-        .status-box {
-            background: white;
-            border-radius: 18px;
-            padding: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-            margin-bottom: 20px;
+        .bank-card {
+            background: linear-gradient(135deg, var(--primary), #004d99);
+            border-radius: 25px; padding: 30px; color: white;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            margin: auto; max-width: 500px;
         }
-
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
-    <div class="bg-shape shape1"></div>
-    <div class="bg-shape shape2"></div>
+    <div class="animated-bg" id="bg">
+        </div>
 
     <div id="loginOverlay">
-        <div class="login-box">
-            <div style="background: var(--kuraimi-blue); width: 60px; height: 60px; border-radius: 15px; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.5rem;">🏦</div>
-            <h2>كريمي تداول</h2>
-            <p>نظام التداول اللحظي - هوامير اليمن</p>
+        <div class="login-card">
+            <div class="logo-area">💎</div>
+            <h2>الهاشمي تداول</h2>
+            <p style="color: #666; font-size: 0.9rem;">نظام إدارة الأصول اللحظي</p>
             
-            <div class="input-group">
-                <input type="text" id="userName" placeholder="الاسم الكامل">
-            </div>
-            <div class="input-group">
-                <input type="tel" id="userPhone" placeholder="رقم الموبايل">
-            </div>
+            <input type="text" id="userName" placeholder="الاسم الكامل">
+            <input type="tel" id="userPhone" placeholder="رقم الموبايل">
             
-            <button class="btn-kuraimi" onclick="enterApp()">تسجيل الدخول الآمن 🔒</button>
+            <button class="btn-hashemi" onclick="unlockApp()">تسجيل الدخول الآمن 🔒</button>
         </div>
     </div>
 
-    <div class="app-container" id="mainApp">
-        <div class="header-card">
-            <div class="user-badge" id="userRank">🏢 مدير فرع</div>
-            <h3 id="welcomeMsg" style="margin:0; font-weight: 400;">أهلاً بك، ..</h3>
-            
-            <div class="balance-grid" style="margin-top: 25px;">
-                <div class="bal-box">
-                    <strong><span id="oldBal">1,500</span></strong>
-                    <span>الريال القديم</span>
-                </div>
-                <div class="bal-box">
-                    <strong><span id="newBal">15,000</span></strong>
-                    <span>الريال الجديد</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="status-box">
-            <div>
-                <p style="margin:0; font-size: 0.8rem; color: #888;">سعر الصرف الحالي</p>
-                <div id="rateText" style="font-weight: 800; color: var(--kuraimi-blue); font-size: 1.2rem;">1000 : 528.44</div>
-            </div>
-            <div style="width: 40px; height: 40px; background: #eef5ff; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: var(--kuraimi-blue);">📈</div>
-        </div>
-
-        <button class="btn-kuraimi" onclick="executeTrade()" style="margin-bottom: 25px;">تنفيذ عملية سريعة ⚡</button>
-
-        <div style="background: white; border-radius: 20px; padding: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.05);">
-            <h4 style="margin:0 0 15px 0; color: var(--kuraimi-blue);">🏆 قائمة الهوامير</h4>
-            <div id="leaderboard">
-                <div style="display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #f5f5f5;">
-                    <span style="font-weight: 600;">محمد هاشم (أنت)</span>
-                    <span style="color: var(--kuraimi-green); font-weight: bold;">+ 4,250 YR</span>
-                </div>
+    <div id="mainContent">
+        <div class="bank-card">
+            <div style="font-size: 0.8rem; background: rgba(255,255,255,0.2); display: inline-block; padding: 5px 15px; border-radius: 50px; margin-bottom: 10px;">👑 رتبة: هامور</div>
+            <h3 id="welcomeMsg" style="margin:0;">أهلاً بك في الهاشمي تداول</h3>
+            <div style="display: flex; justify-content: space-between; margin-top: 30px; text-align: center;">
+                <div><strong style="font-size: 1.8rem;">1,500</strong><br><span style="opacity: 0.7;">الريال القديم</span></div>
+                <div><strong style="font-size: 1.8rem;">15,000</strong><br><span style="opacity: 0.7;">الريال الجديد</span></div>
             </div>
         </div>
     </div>
 
     <script>
-        function enterApp() {
-            const name = document.getElementById('userName').value;
-            if(!name) return alert("يرجى إدخال اسمك");
+        // توليد مربعات متحركة هندسياً
+        const bg = document.getElementById('bg');
+        for (let i = 0; i < 15; i++) {
+            const cube = document.createElement('div');
+            cube.className = 'cube';
+            cube.style.left = Math.random() * 100 + '%';
+            cube.style.width = cube.style.height = Math.random() * 50 + 20 + 'px';
+            cube.style.animationDelay = Math.random() * 10 + 's';
+            cube.style.animationDuration = Math.random() * 10 + 10 + 's';
+            bg.appendChild(cube);
+        }
 
-            document.getElementById('loginOverlay').style.transform = 'scale(1.2)';
+        function unlockApp() {
+            const name = document.getElementById('userName').value;
+            if(!name) return alert("ادخل اسمك يا هامور!");
+
             document.getElementById('loginOverlay').style.opacity = '0';
-            
             setTimeout(() => {
                 document.getElementById('loginOverlay').style.display = 'none';
-                document.getElementById('mainApp').style.opacity = '1';
-                document.getElementById('welcomeMsg').innerText = `أهلاً بك، ${name}`;
-            }, 600);
+                const main = document.getElementById('mainContent');
+                main.style.display = 'block';
+                setTimeout(() => main.style.opacity = '1', 50);
+                document.getElementById('welcomeMsg').innerText = `أهلاً بك يا ${name}`;
+            }, 800);
         }
-
-        async function updateMarket() {
-            try {
-                const response = await fetch('/api/rate');
-                const data = await response.json();
-                if(data.success) {
-                    document.getElementById('rateText').innerText = `1000 : ${data.rate}`;
-                }
-            } catch (e) { console.log("تحديث البيانات..."); }
-        }
-
-        function executeTrade() {
-            alert("تم إرسال طلب التداول للمقاصة بنجاح ✅");
-        }
-
-        setInterval(updateMarket, 15000);
-        updateMarket();
     </script>
 </body>
 </html>
