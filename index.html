@@ -6,107 +6,104 @@
     <title>بورصة اليمن | هوامير 100/1000</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #0046ad; --secondary: #f4f7fa; --text: #333; --accent: #2ecc71; --danger: #e74c3c; }
+        :root { --primary: #0046ad; --secondary: #f4f7fa; --text: #333; --accent: #2ecc71; --danger: #e74c3c; --gold: #f1c40f; }
         body { background-color: var(--secondary); font-family: 'Cairo', sans-serif; margin: 0; padding: 20px; color: var(--text); display: flex; flex-direction: column; align-items: center; }
-        
         .container { width: 100%; max-width: 500px; }
 
-        /* كرت المحفظة البنكي */
-        .bank-card { background: linear-gradient(135deg, var(--primary), #002a66); color: white; border-radius: 20px; padding: 25px; box-shadow: 0 10px 20px rgba(0,0,0,0.15); margin-bottom: 25px; position: relative; overflow: hidden; }
-        .bank-card::after { content: ''; position: absolute; top: -50%; right: -50%; width: 100%; height: 200%; background: rgba(255,255,255,0.05); transform: rotate(45deg); }
-        
-        .bank-card h2 { margin: 0; font-size: 1.1rem; opacity: 0.9; }
-        .balance-box { display: flex; justify-content: space-between; margin-top: 20px; position: relative; z-index: 1; }
-        .balance-item { text-align: center; }
-        .balance-item span { display: block; font-size: 0.8rem; opacity: 0.8; margin-bottom: 5px; }
-        .balance-item strong { font-size: 1.5rem; letter-spacing: 1px; }
+        /* كرت المحفظة */
+        .bank-card { background: linear-gradient(135deg, var(--primary), #002a66); color: white; border-radius: 20px; padding: 25px; box-shadow: 0 10px 20px rgba(0,0,0,0.15); margin-bottom: 20px; }
+        .balance-box { display: flex; justify-content: space-between; margin-top: 15px; }
+        .balance-item span { display: block; font-size: 0.8rem; opacity: 0.8; }
+        .balance-item strong { font-size: 1.4rem; }
 
-        /* مؤشر السوق اللحظي */
-        .live-market { background: white; border-radius: 15px; padding: 20px; border-right: 5px solid var(--primary); margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; }
-        .rate-info p { margin: 0; font-size: 0.9rem; color: #666; }
-        .rate-badge { background: #eef2f7; padding: 8px 15px; border-radius: 50px; color: var(--primary); font-weight: bold; font-size: 1.2rem; }
+        /* الأقسام المشتركة */
+        .section-box { background: white; border-radius: 15px; padding: 15px; margin-bottom: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .rate-badge { background: #eef2f7; padding: 8px 12px; border-radius: 50px; color: var(--primary); font-weight: bold; }
 
-        /* أزرار التفاعل */
-        .actions { display: grid; grid-template-columns: 1fr; gap: 15px; }
-        .btn-action { width: 100%; padding: 16px; border: none; border-radius: 12px; font-weight: bold; font-size: 1.1rem; cursor: pointer; transition: 0.3s; font-family: 'Cairo'; }
-        .btn-trade { background-color: var(--accent); color: white; box-shadow: 0 5px 15px rgba(46, 204, 113, 0.3); }
-        .btn-trade:active { transform: scale(0.95); }
-        
-        .status-msg { text-align: center; font-size: 0.8rem; color: #888; margin-top: 15px; }
-        .pulse { animation: pulse-animation 2s infinite; }
-        @keyframes pulse-animation { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+        /* لوحة الشرف */
+        .leaderboard-title { display: flex; align-items: center; gap: 10px; color: var(--primary); margin-bottom: 15px; border-bottom: 2px solid var(--secondary); padding-bottom: 10px; }
+        .player-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #f0f0f0; }
+        .player-info { display: flex; flex-direction: column; }
+        .player-rank { font-size: 0.75rem; color: #666; font-weight: bold; }
+        .player-profit { color: var(--accent); font-weight: bold; }
+        .countdown { text-align: center; color: var(--danger); font-size: 0.85rem; margin-top: 15px; font-weight: bold; background: #fff5f5; padding: 8px; border-radius: 10px; }
+
+        /* الزر */
+        .btn-trade { width: 100%; padding: 15px; border: none; border-radius: 12px; background: var(--accent); color: white; font-weight: bold; font-size: 1.1rem; cursor: pointer; box-shadow: 0 5px 15px rgba(46, 204, 113, 0.3); font-family: 'Cairo'; }
     </style>
 </head>
 <body>
 
     <div class="container">
         <div class="bank-card">
-            <h2>💰 رصيدك الحالي (افتراضي)</h2>
+            <h2>💰 الرصيد الحالي</h2>
             <div class="balance-box">
-                <div class="balance-item">
-                    <span>الريال القديم</span>
-                    <strong id="oldBal">1,500</strong>
-                </div>
-                <div class="balance-item">
-                    <span>الريال الجديد</span>
-                    <strong id="newBal">15,000</strong>
-                </div>
+                <div class="balance-item"><span>القديم (YR)</span><strong id="oldBal">1,500</strong></div>
+                <div class="balance-item"><span>الجديد (N-YR)</span><strong id="newBal">15,000</strong></div>
             </div>
         </div>
 
-        <div class="live-market">
-            <div class="rate-info">
-                <p>📊 سعر الصرف (القديم : 1000 جديد)</p>
-                <small id="updateStatus" class="pulse">متصل بالسحاب...</small>
+        <div class="section-box" style="display: flex; justify-content: space-between; align-items: center;">
+            <div><p style="margin:0; font-size:0.9rem; color:#666;">سعر الصرف اللحظي</p></div>
+            <div class="rate-badge" id="rateText">529.43 : 1000</div>
+        </div>
+
+        <button class="btn-trade" onclick="handleTrade()">تنفيذ صفقة سريعة ⚡</button>
+
+        <div class="section-box" style="margin-top: 20px;">
+            <div class="leaderboard-title">
+                <span>🏆</span>
+                <h3 style="margin:0; font-size:1.1rem;">لوحة شرف الهوامير</h3>
             </div>
-            <div class="rate-badge" id="rateText">--- : 1000</div>
-        </div>
+            
+            <div class="player-row">
+                <div class="player-info">
+                    <span>محمد هاشم</span>
+                    <span class="player-rank" style="color: var(--gold);">👑 هامور</span>
+                </div>
+                <span class="player-profit">+4,250 YR</span>
+            </div>
 
-        <div class="actions">
-            <button class="btn-action btn-trade" onclick="handleTrade()">تنفيذ صفقة سحب/إيداع ⚡</button>
-        </div>
+            <div class="player-row">
+                <div class="player-info">
+                    <span>أحمد علي</span>
+                    <span class="player-rank">🏢 مدير فرع</span>
+                </div>
+                <span class="player-profit">+2,100 YR</span>
+            </div>
 
-        <p class="status-msg">🔐 نظام التحقق من الهوية عبر الواتساب مفعل تلقائياً</p>
+            <div class="player-row" style="border-bottom: none;">
+                <div class="player-info">
+                    <span>خالد الصنعاني</span>
+                    <span class="player-rank">🪙 صراف ناشئ</span>
+                </div>
+                <span class="player-profit">+850 YR</span>
+            </div>
+
+            <div class="countdown" id="timer">
+                ⏳ توزيع الجوائز الحقيقية بعد: 02 يوم : 14 ساعة
+            </div>
+        </div>
     </div>
 
     <script>
-        // المتغيرات الأساسية
-        let oldCurrency = 1500;
-        let currentLiveRate = 530; // سعر افتراضي قبل التحديث
-
-        // 1. دالة سحب السعر الحقيقي من العقل السحابي (api/rate.js)
+        // دالة تحديث السعر من الـ API
         async function updateMarket() {
             try {
                 const response = await fetch('/api/rate');
                 const data = await response.json();
                 if(data.success) {
-                    currentLiveRate = parseFloat(data.rate);
-                    document.getElementById('rateText').innerText = `${currentLiveRate} : 1000`;
-                    document.getElementById('updateStatus').innerText = "تحديث لحظي فعال ✅";
-                    document.getElementById('updateStatus').style.color = "#2ecc71";
-                    console.log("تم تحديث نبض السوق 📈");
+                    document.getElementById('rateText').innerText = `${data.rate} : 1000`;
                 }
-            } catch (e) { 
-                document.getElementById('updateStatus').innerText = "جاري إعادة الاتصال...";
-                document.getElementById('updateStatus').style.color = "#e74c3c";
-            }
+            } catch (e) { console.log("اتصال سحابي..."); }
         }
 
-        // 2. منطق تنفيذ الصفقة بناءً على السعر الحقيقي
         function handleTrade() {
-            // محاكاة عملية ربح بناءً على السعر الحالي
-            let profit = Math.floor(Math.random() * 20);
-            oldCurrency += profit;
-            
-            document.getElementById('oldBal').innerText = oldCurrency.toLocaleString();
-            document.getElementById('newBal').innerText = (oldCurrency * 10).toLocaleString();
-            
-            alert(`✅ تمت العملية بنجاح! \n صافي الربح من فارق السعر: ${profit} ريال قديم`);
+            alert("✅ تمت العملية! زادت أرباحك في لوحة الشرف.");
         }
 
-        // 3. التحديث التلقائي كل 20 ثانية لضمان الدقة
         setInterval(updateMarket, 20000);
-        updateMarket(); // استدعاء فوري عند فتح الموقع
+        updateMarket();
     </script>
 </body>
 </html>
