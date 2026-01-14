@@ -10,17 +10,16 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
 
     <style>
-        :root { --primary: #003366; --accent: #28a745; --bg: #f4f7f9; }
-        body { font-family: 'Cairo', sans-serif; background: var(--bg); margin: 0; overflow: hidden; }
+        :root { --primary: #003366; --accent: #28a745; --bg: #001a33; }
+        body { font-family: 'Cairo', sans-serif; background: var(--bg); margin: 0; overflow: hidden; color: white; }
         .animated-bg { position: fixed; inset: 0; z-index: -1; background: linear-gradient(45deg, #001a33, #003366); }
-        .cube { position: absolute; background: rgba(255,255,255,0.05); animation: move 15s linear infinite; bottom: -100px; }
-        @keyframes move { 0% { transform: translateY(0) rotate(0deg); opacity: 1; } 100% { transform: translateY(-1000px) rotate(720deg); opacity: 0; } }
         #loginOverlay { position: fixed; inset: 0; z-index: 1000; background: rgba(0,26,51,0.9); backdrop-filter: blur(15px); display: flex; align-items: center; justify-content: center; }
-        .login-card { background: white; padding: 40px; border-radius: 30px; width: 90%; max-width: 400px; text-align: center; }
+        .login-card { background: white; padding: 40px; border-radius: 30px; width: 90%; max-width: 400px; text-align: center; color: #333; }
         input { width: 100%; padding: 15px; margin: 10px 0; border-radius: 12px; border: 2px solid #eee; text-align: center; font-family: 'Cairo'; box-sizing: border-box; }
         .btn-main { background: linear-gradient(to right, var(--accent), #218838); color: white; border: none; width: 100%; padding: 16px; border-radius: 12px; font-weight: 700; cursor: pointer; }
-        #mainContent { display: none; padding: 20px; max-width: 500px; margin: auto; }
+        #mainContent { display: none; padding: 20px; max-width: 500px; margin: auto; text-align: center; }
         .balance-card { background: linear-gradient(135deg, var(--primary), #0056b3); border-radius: 25px; padding: 30px; color: white; box-shadow: 0 15px 30px rgba(0,0,0,0.2); }
+        .price-bar { background: rgba(0,0,0,0.3); color: #28a745; padding: 12px; margin-top: 20px; border-radius: 15px; font-weight: bold; font-size: 0.9rem; }
     </style>
 </head>
 <body>
@@ -43,13 +42,18 @@
             <h3 id="welcomeText">مرحباً بك</h3>
             <div style="display:flex; justify-content:space-between; margin-top:20px;">
                 <div><span id="oldBal">1,500</span><br><small>الريال القديم</small></div>
-                <div><span id="newBal">15,000</span><br><small>الريال الجديد</small></div>
+                <div><span id="newBalDisplay">15,000</span><br><small>الريال الجديد</small></div>
             </div>
+        </div>
+
+        <div class="price-bar">
+            <marquee behavior="scroll" direction="right" scrollamount="5">
+                💵 دولار صنعاء: شراء 535 / بيع 538 | 🇸🇦 سعودي صنعاء: شراء 140 / بيع 142 | 💵 دولار عدن: شراء 1600 / بيع 1615
+            </marquee>
         </div>
     </div>
 
     <script>
-        // دمج مفاتيح Firebase التي استخرجتها أنت يا محمد
         const firebaseConfig = {
           apiKey: "AIzaSyBk8cLXSGB061b9gWL8MON4e82wjDY6SLk",
           authDomain: "al-hashemi-trading.firebaseapp.com",
@@ -69,26 +73,27 @@
             if(!name || !phone) return alert("البيانات ناقصة!");
 
             try {
-                // تخزين المستخدم في السحابة فوراً
-                await db.collection("traders").doc(phone).set({
-                    name: name,
-                    phone: phone,
-                    oldBal: 1500,
-                    newBal: 15000,
-                    date: new Date()
-                });
+                // تخزين أو جلب بيانات المتداول
+                const userDoc = await db.collection("traders").doc(phone).get();
+                
+                if (!userDoc.exists) {
+                    await db.collection("traders").doc(phone).set({
+                        name: name, phone: phone, oldBal: 1500, newBal: 15000, date: new Date()
+                    });
+                }
 
                 document.getElementById('loginOverlay').style.display = 'none';
                 document.getElementById('mainContent').style.display = 'block';
                 document.getElementById('welcomeText').innerText = `أهلاً بك يا ${name}`;
-            } catch (e) { alert("خطأ في السيرفر!"); }
-        }
 
-        // حركة الخلفية
-        for(let i=0; i<12; i++){
-            let c = document.createElement('div'); c.className = 'cube';
-            c.style.left = Math.random()*100+'%'; c.style.width = c.style.height = Math.random()*40+20+'px';
-            document.getElementById('bg').appendChild(c);
+                // تحديث الرصيد لحظياً من السحابة
+                db.collection("traders").doc(phone).onSnapshot((doc) => {
+                    if (doc.exists) {
+                        document.getElementById('newBalDisplay').innerText = doc.data().newBal.toLocaleString();
+                    }
+                });
+
+            } catch (e) { alert("خطأ في الاتصال بالسحابة!"); }
         }
     </script>
 </body>
