@@ -2,23 +2,33 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>لوحة تحكم الهاشمي | Admin</title>
+    <title>لوحة التحكم | الإدارة</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@700&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
     <style>
-        body { font-family: 'Cairo'; background: #001a33; color: white; padding: 20px; }
-        .user-card { background: rgba(255,255,255,0.1); padding: 15px; border-radius: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
-        input { width: 80px; padding: 5px; border-radius: 5px; text-align: center; }
-        .btn-update { background: #28a745; color: white; border: none; padding: 8px 15px; border-radius: 8px; cursor: pointer; }
+        body { font-family: 'Cairo'; background: #000d1a; color: white; padding: 20px; }
+        .box { background: rgba(255,255,255,0.05); padding: 15px; border-radius: 15px; border: 1px solid #0056b3; margin-bottom: 20px; }
+        input { padding: 8px; border-radius: 5px; border: none; margin: 5px; width: 150px; }
+        .btn { background: #28a745; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; }
+        .user-item { border-bottom: 1px solid #222; padding: 10px; display: flex; justify-content: space-between; align-items: center; }
     </style>
 </head>
 <body>
-    <h2>🚀 لوحة إدارة المتداولين</h2>
-    <div id="usersList">جاري تحميل الهوامير...</div>
+    <h2>🚀 لوحة تحكم الهاشمي</h2>
+
+    <div class="box">
+        <h3>📢 التحكم بشريط الأسعار</h3>
+        <input type="text" id="priceInput" style="width: 70%;" placeholder="مثال: دولار صنعاء 535 | سعودي 140">
+        <button class="btn" style="background: #ffc107; color: black;" onclick="setPrice()">نشر الأسعار</button>
+    </div>
+
+    <div class="box">
+        <h3>👥 المتداولين</h3>
+        <div id="list">جاري التحميل...</div>
+    </div>
 
     <script>
-        // الصق هنا نفس إعدادات firebaseConfig الخاصة بك من ملف index.html
         const firebaseConfig = {
           apiKey: "AIzaSyBk8cLXSGB061b9gWL8MON4e82wjDY6SLk",
           authDomain: "al-hashemi-trading.firebaseapp.com",
@@ -30,29 +40,31 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
-        // جلب المتداولين من السحابة
-        db.collection("traders").onSnapshot((querySnapshot) => {
-            const list = document.getElementById('usersList');
-            list.innerHTML = '';
-            querySnapshot.forEach((doc) => {
-                const user = doc.data();
-                list.innerHTML += `
-                    <div class="user-card">
-                        <div><strong>${user.name}</strong><br><small>${user.phone}</small></div>
-                        <div>
-                            جديد: <input type="number" id="new-${doc.id}" value="${user.newBal}">
-                            <button class="btn-update" onclick="updateBal('${doc.id}')">تحديث</button>
-                        </div>
-                    </div>`;
+        async function setPrice() {
+            const text = document.getElementById('priceInput').value;
+            await db.collection("settings").doc("prices").set({ text });
+            alert("تم تحديث الشريط عند الجميع! ✅");
+        }
+
+        db.collection("traders").onSnapshot(s => {
+            const div = document.getElementById('list');
+            div.innerHTML = '';
+            s.forEach(doc => {
+                const u = doc.data();
+                div.innerHTML += `<div class="user-item">
+                    <div>${u.name}<br><small>${u.phone}</small></div>
+                    <div>
+                        <input type="number" id="b-${doc.id}" value="${u.newBal}">
+                        <button class="btn" onclick="update('${doc.id}')">تعديل</button>
+                    </div>
+                </div>`;
             });
         });
 
-        async function updateBal(id) {
-            const newVal = document.getElementById(`new-${id}`).value;
-            await db.collection("traders").doc(id).update({ newBal: Number(newVal) });
-            alert("تم تحديث رصيد الهامور بنجاح! ✅");
+        async function update(id) {
+            const val = document.getElementById(`b-${id}`).value;
+            await db.collection("traders").doc(id).update({ newBal: Number(val) });
         }
     </script>
 </body>
 </html>
-
