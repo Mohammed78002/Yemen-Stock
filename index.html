@@ -10,60 +10,46 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
 
     <style>
-        /* التنسيق الهندسي المحترف المستوحى من بنك الكريمي */
         :root { --primary: #003366; --accent: #28a745; --bg: #f4f7f9; }
-        body { font-family: 'Cairo', sans-serif; background: var(--bg); margin: 0; overflow-x: hidden; }
-        
-        /* الخلفية المتحركة */
+        body { font-family: 'Cairo', sans-serif; background: var(--bg); margin: 0; overflow: hidden; }
         .animated-bg { position: fixed; inset: 0; z-index: -1; background: linear-gradient(45deg, #001a33, #003366); }
         .cube { position: absolute; background: rgba(255,255,255,0.05); animation: move 15s linear infinite; bottom: -100px; }
         @keyframes move { 0% { transform: translateY(0) rotate(0deg); opacity: 1; } 100% { transform: translateY(-1000px) rotate(720deg); opacity: 0; } }
-
-        /* شاشة الدخول */
-        #loginOverlay { position: fixed; inset: 0; z-index: 1000; background: rgba(0,26,51,0.9); backdrop-filter: blur(15px); display: flex; align-items: center; justify-content: center; transition: 0.8s; }
-        .login-card { background: white; padding: 40px; border-radius: 30px; width: 90%; max-width: 400px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.3); }
-        
+        #loginOverlay { position: fixed; inset: 0; z-index: 1000; background: rgba(0,26,51,0.9); backdrop-filter: blur(15px); display: flex; align-items: center; justify-content: center; }
+        .login-card { background: white; padding: 40px; border-radius: 30px; width: 90%; max-width: 400px; text-align: center; }
         input { width: 100%; padding: 15px; margin: 10px 0; border-radius: 12px; border: 2px solid #eee; text-align: center; font-family: 'Cairo'; box-sizing: border-box; }
-        .btn-main { background: linear-gradient(to right, var(--accent), #218838); color: white; border: none; width: 100%; padding: 16px; border-radius: 12px; font-weight: 700; cursor: pointer; transition: 0.3s; }
-        
-        /* الواجهة الرئيسية */
+        .btn-main { background: linear-gradient(to right, var(--accent), #218838); color: white; border: none; width: 100%; padding: 16px; border-radius: 12px; font-weight: 700; cursor: pointer; }
         #mainContent { display: none; padding: 20px; max-width: 500px; margin: auto; }
         .balance-card { background: linear-gradient(135deg, var(--primary), #0056b3); border-radius: 25px; padding: 30px; color: white; box-shadow: 0 15px 30px rgba(0,0,0,0.2); }
     </style>
 </head>
 <body>
-
     <div class="animated-bg" id="bg"></div>
 
     <div id="loginOverlay">
         <div class="login-card">
             <div style="background:var(--primary); width:60px; height:60px; border-radius:15px; margin:0 auto 20px; display:flex; align-items:center; justify-content:center; color:white; font-size:1.5rem;">🏦</div>
             <h2 style="color:var(--primary); margin:0;">الهاشمي تداول</h2>
-            <p style="color:#666; font-size:0.9rem;">نظام التداول السحابي الآمن</p>
+            <p style="color:#666; font-size:0.9rem;">أهلاً بك في منصة تداول ملايين اليمنيين</p>
             <input type="text" id="userName" placeholder="الاسم الكامل">
-            <input type="tel" id="userPhone" placeholder="رقم الموبايل (واتساب)">
-            <button class="btn-main" onclick="startTrading()">بدء التداول السحابي 🔒</button>
+            <input type="tel" id="userPhone" placeholder="رقم الموبايل">
+            <button class="btn-main" onclick="startTrading()">تسجيل دخول آمن 🔒</button>
         </div>
     </div>
 
     <div id="mainContent">
         <div class="balance-card">
-            <div id="userRank" style="font-size:0.8rem; background:rgba(255,255,255,0.2); display:inline-block; padding:5px 12px; border-radius:50px; margin-bottom:10px;">رتبة: هامور جديد</div>
+            <div style="font-size:0.8rem; background:rgba(255,255,255,0.2); display:inline-block; padding:5px 12px; border-radius:50px; margin-bottom:10px;">رتبة: هامور</div>
             <h3 id="welcomeText">مرحباً بك</h3>
             <div style="display:flex; justify-content:space-between; margin-top:20px;">
                 <div><span id="oldBal">1,500</span><br><small>الريال القديم</small></div>
                 <div><span id="newBal">15,000</span><br><small>الريال الجديد</small></div>
             </div>
         </div>
-        <div style="background:white; margin-top:20px; padding:20px; border-radius:20px; text-align:center; box-shadow:0 10px 20px rgba(0,0,0,0.05);">
-            <p style="color:#888; margin:0;">سعر الصرف اللحظي</p>
-            <h2 style="color:var(--primary); margin:5px 0;">1000 : 528.50</h2>
-            <button class="btn-main" onclick="alert('جاري معالجة الصفقة في السيرفر...')">تنفيذ صفقة سريعة ⚡</button>
-        </div>
     </div>
 
     <script>
-        // إعدادات Firebase الحقيقية لمؤسسة الهاشمي
+        // دمج مفاتيح Firebase التي استخرجتها أنت يا محمد
         const firebaseConfig = {
           apiKey: "AIzaSyBk8cLXSGB061b9gWL8MON4e82wjDY6SLk",
           authDomain: "al-hashemi-trading.firebaseapp.com",
@@ -76,42 +62,32 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
-        // نظام الحفظ في السحابة
         async function startTrading() {
             const name = document.getElementById('userName').value;
             const phone = document.getElementById('userPhone').value;
 
-            if(!name || !phone) return alert("يرجى إكمال البيانات يا هامور!");
+            if(!name || !phone) return alert("البيانات ناقصة!");
 
             try {
-                // حفظ البيانات في السيرفر الحقيقي
+                // تخزين المستخدم في السحابة فوراً
                 await db.collection("traders").doc(phone).set({
-                    fullName: name,
+                    name: name,
                     phone: phone,
-                    balanceOld: 1500,
-                    balanceNew: 15000,
-                    joinedAt: new Date()
+                    oldBal: 1500,
+                    newBal: 15000,
+                    date: new Date()
                 });
 
-                document.getElementById('loginOverlay').style.opacity = '0';
-                setTimeout(() => {
-                    document.getElementById('loginOverlay').style.display = 'none';
-                    document.getElementById('mainContent').style.display = 'block';
-                    document.getElementById('welcomeText').innerText = `أهلاً بك يا ${name}`;
-                }, 800);
-
-            } catch (error) {
-                alert("حدث خطأ في الاتصال بالسحابة: " + error.message);
-            }
+                document.getElementById('loginOverlay').style.display = 'none';
+                document.getElementById('mainContent').style.display = 'block';
+                document.getElementById('welcomeText').innerText = `أهلاً بك يا ${name}`;
+            } catch (e) { alert("خطأ في السيرفر!"); }
         }
 
-        // توليد المربعات المتحركة
-        for(let i=0; i<10; i++) {
-            let c = document.createElement('div');
-            c.className = 'cube';
-            c.style.left = Math.random()*100+'%';
-            c.style.width = c.style.height = Math.random()*50+20+'px';
-            c.style.animationDelay = Math.random()*10+'s';
+        // حركة الخلفية
+        for(let i=0; i<12; i++){
+            let c = document.createElement('div'); c.className = 'cube';
+            c.style.left = Math.random()*100+'%'; c.style.width = c.style.height = Math.random()*40+20+'px';
             document.getElementById('bg').appendChild(c);
         }
     </script>
